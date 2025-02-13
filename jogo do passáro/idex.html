@@ -1,0 +1,92 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <title>Exercício do Pássaro</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;  }
+    </style>
+</head>
+<body>
+
+<script>
+
+    var config = { // define as configs do jogo 
+        type: Phaser.AUTO,
+        width: 800,
+        height: 600,
+
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        }
+    };
+
+    var game = new Phaser.Game(config);
+    var passarinho;
+    var sinCount = 0
+    // funçao criada pro movimento em formato de funçao seno
+    function clamp(value, minValue, maxValue) {
+        var res = value;
+        if(value > maxValue) {res = maxValue;}
+        if(value < minValue) {res = minValue;}
+
+        return res;
+
+    
+    }
+    
+    function preload() { // carrega as imagens previamente estabelecidas
+        this.load.image('bg', 'assets/bg_space.png');
+        this.load.spritesheet('bird', 'assets/bird-green.png', {frameWidth: 75, frameHeight: 75});
+
+    }
+
+    function create() { // cria as imagens do preload
+
+        this.add.image(400, 300, 'bg').setScale(1.2);
+        passarinho = this.add.sprite(100, 300, 'bird').setScale(1.3);
+        // movimento do passaro: velocidade, virada, etc.
+        passarinho.moveSign = 1;
+        passarinho.speed = 4;
+        passarinho.flip = 0;
+        this.anims.create({
+            key: 'fly',
+            frames: this.anims.generateFrameNumbers('bird', { start: 0, end: 7 }),
+            frameRate: 10,
+            repeat: -1
+        
+        });
+
+        passarinho.anims.play('fly', true);
+    }
+
+    function update() {  // atualiza os frames do jogo
+        // eixo X
+        if (passarinho.x < 100 && passarinho.moveSign === -1) { passarinho.moveSign = 1; passarinho.flip = 0;}
+        if (passarinho.x > 700 && passarinho.moveSign === 1) { passarinho.moveSign = -1; passarinho.flip = 1;}
+
+        passarinho.x += passarinho.speed*passarinho.moveSign;
+        passarinho.setFlip(passarinho.flip === 1, false);
+
+        // eixo Y
+        sinCount+=.05;
+        passarinho.y = 300 - 100*Math.sin(sinCount);
+        passarinho.y = clamp(passarinho.y, 100, 500)
+
+    }
+
+</script>
+
+</body>
+</html>
